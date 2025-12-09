@@ -1,20 +1,11 @@
 {
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "framework": null,
   "rewrites": [
     {
       "source": "/.well-known/apple-app-site-association",
       "destination": "/public/.well-known/apple-app-site-association"
-    },
-    {
-      "source": "/auth/callback",
-      "destination": "/auth/callback/index.html"
-    },
-    {
-      "source": "/privacy",
-      "destination": "/privacy/index.html"
-    },
-    {
-      "source": "/terms",
-      "destination": "/terms/index.html"
     }
   ],
   "headers": [
@@ -22,17 +13,14 @@
       "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+        { "key": "X-Frame-Options", "value": "DENY" }
       ]
     },
     {
-      "source": "/.well-known/apple-app-site-association",
+      "source": "/.well-known/(.*)",
       "headers": [
         { "key": "Content-Type", "value": "application/json" }
       ]
     }
-  ],
-  "trailingSlash": false
+  ]
 }
