@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dunia - email doğrulandı</title>
+    <title>dunia</title>
     <meta name="robots" content="noindex">
-    <meta name="apple-itunes-app" content="app-id=YOUR_APP_ID">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -28,18 +27,13 @@
             border: 1px solid rgba(255,255,255,0.08);
         }
         .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 24px;
-            background: #111;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 28px;
         }
         .logo img {
-            width: 60px;
-            height: 60px;
+            width: 100%;
+            height: 100%;
         }
         .spinner {
             width: 32px;
@@ -48,16 +42,9 @@
             border-top-color: #fff;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin: 0 auto 28px;
+            margin: 0 auto 24px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .checkmark {
-            width: 32px;
-            height: 32px;
-            margin: 0 auto 28px;
-            font-size: 28px;
-            display: none;
-        }
         .title {
             font-size: 22px;
             font-weight: 700;
@@ -79,17 +66,27 @@
             font-weight: 600;
             text-decoration: none;
             border-radius: 50px;
-            margin-bottom: 16px;
+            border: none;
+            cursor: pointer;
             transition: transform 0.2s, opacity 0.2s;
         }
         .btn:hover { transform: scale(1.02); }
         .btn:active { transform: scale(0.98); }
         .btn.hidden { display: none; }
+        .btn.secondary {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            margin-top: 12px;
+        }
         .status {
             font-size: 13px;
             color: rgba(255,255,255,0.4);
+            margin-top: 16px;
         }
         .status.hidden { display: none; }
+        .error { color: #ef4444; }
+        .success { color: #22c55e; }
         .confetti {
             position: fixed;
             top: 0; left: 0;
@@ -107,11 +104,6 @@
             0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in { animation: fadeIn 0.4s ease forwards; }
     </style>
 </head>
 <body>
@@ -120,17 +112,19 @@
             <img src="https://dunia.one/images/logo.png" alt="dunia">
         </div>
         <div class="spinner" id="spinner"></div>
-        <div class="checkmark" id="checkmark">✓</div>
-        <h1 class="title" id="title">email doğrulandı! ✓</h1>
-        <p class="message" id="message">hesabın onaylandı. şimdi uygulamayı açarak doğrulanmış profilini görebilirsin.</p>
-        <a href="#" class="btn hidden" id="btn">devam et</a>
-        <p class="status" id="status">dunia açılıyor...</p>
+        <h1 class="title" id="title">doğrulanıyor...</h1>
+        <p class="message" id="message">email adresin doğrulanıyor, lütfen bekle.</p>
+        <button class="btn hidden" id="btn">devam et</button>
+        <button class="btn secondary hidden" id="btn-appstore">app store'dan indir</button>
+        <p class="status" id="status"></p>
     </div>
     
     <div class="confetti" id="confetti"></div>
 
     <script>
         (function() {
+            const SUPABASE_URL = 'https://mjxqfmlsjokcuwugytve.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qeHFmbWxzam9rY3V3dWd5dHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5NTk5MDAsImV4cCI6MjA0MDUzNTkwMH0.tBeYr2BaPMgGJBJ0rxJMBQaprXNRfyX9dEJNOqmFfHU';
             const APP_STORE_URL = 'https://apps.apple.com/app/dunia/id6450894038';
             
             // Parse URL params
@@ -138,24 +132,23 @@
             const hash = window.location.hash;
             const hashParams = new URLSearchParams(hash.replace('#', ''));
             
-            const token = params.get('token') || hashParams.get('token') || hashParams.get('access_token') || params.get('access_token');
+            const token = params.get('token') || hashParams.get('token');
             const userId = params.get('user_id') || hashParams.get('user_id');
             const type = params.get('type') || hashParams.get('type') || 'verify';
             
             // DOM elements
             const spinner = document.getElementById('spinner');
-            const checkmark = document.getElementById('checkmark');
             const title = document.getElementById('title');
             const message = document.getElementById('message');
             const btn = document.getElementById('btn');
+            const btnAppstore = document.getElementById('btn-appstore');
             const status = document.getElementById('status');
             const confettiContainer = document.getElementById('confetti');
             
             // Build deep link
             function buildDeepLink() {
                 const dlParams = new URLSearchParams();
-                if (type) dlParams.set('type', type);
-                if (token) dlParams.set('token', token);
+                dlParams.set('type', 'verified');
                 if (userId) dlParams.set('user_id', userId);
                 return 'dunia://auth/callback?' + dlParams.toString();
             }
@@ -177,59 +170,86 @@
                 setTimeout(() => { confettiContainer.innerHTML = ''; }, 4000);
             }
             
-            // Show success state
-            function showSuccess() {
+            // Show success
+            function showSuccess(alreadyVerified) {
                 spinner.style.display = 'none';
-                checkmark.style.display = 'block';
-                showConfetti();
+                if (alreadyVerified) {
+                    title.textContent = 'zaten doğrulanmış';
+                    message.textContent = 'email adresin daha önce doğrulanmış.';
+                } else {
+                    title.textContent = 'email doğrulandı!';
+                    message.textContent = 'hesabın onaylandı. artık onaylı rozetine sahipsin!';
+                    showConfetti();
+                }
+                showButtons();
             }
             
-            // Show button (when app can't be opened)
-            function showButton() {
-                status.classList.add('hidden');
+            // Show error
+            function showError(msg) {
+                spinner.style.display = 'none';
+                title.textContent = 'bir sorun oluştu';
+                title.classList.add('error');
+                message.textContent = msg || 'doğrulama linki geçersiz veya süresi dolmuş olabilir.';
+                showButtons();
+            }
+            
+            // Show buttons
+            function showButtons() {
                 btn.classList.remove('hidden');
-                btn.classList.add('fade-in');
-                btn.href = deepLink;
+                btnAppstore.classList.remove('hidden');
+                status.textContent = '';
                 
-                // On button click, try deep link first, then App Store
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // Try to open app
+                btn.addEventListener('click', function() {
                     window.location.href = deepLink;
-                    
-                    // If app doesn't open in 1.5 seconds, go to App Store
                     setTimeout(function() {
                         if (!document.hidden) {
-                            window.location.href = APP_STORE_URL;
+                            // App didn't open, stay on page
+                            status.textContent = 'uygulama açılamadı. app store\'dan indirebilirsin.';
                         }
                     }, 1500);
                 });
+                
+                btnAppstore.addEventListener('click', function() {
+                    window.location.href = APP_STORE_URL;
+                });
             }
             
-            // Initialize
-            showSuccess();
-            
-            // Try to open app automatically
-            let appOpened = false;
-            
-            document.addEventListener('visibilitychange', function() {
-                if (document.hidden) {
-                    appOpened = true;
+            // Verify email via Supabase RPC
+            async function verifyEmail() {
+                if (!token || !userId) {
+                    showError('doğrulama bilgileri eksik.');
+                    return;
                 }
-            });
-            
-            // Try deep link after short delay
-            setTimeout(function() {
-                window.location.href = deepLink;
-            }, 800);
-            
-            // After 3 seconds, if app didn't open, show button
-            setTimeout(function() {
-                if (!appOpened && !document.hidden) {
-                    showButton();
+                
+                try {
+                    const response = await fetch(SUPABASE_URL + '/rest/v1/rpc/rpc_verify_email_with_token', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                        },
+                        body: JSON.stringify({
+                            p_token: token,
+                            p_user_id: userId
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result && result.success) {
+                        showSuccess(result.already_verified);
+                    } else {
+                        showError(result.error || 'doğrulama başarısız oldu.');
+                    }
+                } catch (error) {
+                    console.error('Verification error:', error);
+                    showError('bir hata oluştu. lütfen tekrar dene.');
                 }
-            }, 3000);
+            }
+            
+            // Start verification
+            verifyEmail();
             
         })();
     </script>
