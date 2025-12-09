@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dunia - yönlendiriliyor</title>
+    <title>dunia - email doğrulandı</title>
     <meta name="robots" content="noindex">
     <meta name="apple-itunes-app" content="app-id=YOUR_APP_ID">
-    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
             background: #000407;
@@ -18,96 +16,80 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 24px;
         }
-        
-        .container {
-            text-align: center;
-            max-width: 380px;
-        }
-        
         .card {
-            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
-            border-radius: 24px;
-            padding: 40px 32px;
-            border: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+            border-radius: 28px;
+            padding: 48px 36px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.08);
         }
-        
         .logo {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 20px;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: #111;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
+        .logo img {
+            width: 60px;
+            height: 60px;
+        }
         .spinner {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border: 3px solid rgba(255,255,255,0.1);
             border-top-color: #fff;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin: 0 auto 24px;
+            margin: 0 auto 28px;
         }
-        
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .success-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
+        .checkmark {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 28px;
+            font-size: 28px;
             display: none;
         }
-        
-        h1 {
-            font-size: 20px;
-            font-weight: 600;
+        .title {
+            font-size: 22px;
+            font-weight: 700;
             margin-bottom: 12px;
-            text-transform: lowercase;
         }
-        
         .message {
-            color: rgba(255,255,255,0.7);
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 24px;
-            text-transform: lowercase;
-        }
-        
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 14px 24px;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
             font-size: 15px;
-            text-align: center;
-            margin-bottom: 12px;
-            text-transform: lowercase;
-            transition: transform 0.2s;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.5;
+            margin-bottom: 28px;
         }
-        
-        .btn:hover { transform: scale(1.02); }
-        
-        .btn-primary {
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 16px 32px;
             background: #fff;
             color: #000;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            margin-bottom: 16px;
+            transition: transform 0.2s, opacity 0.2s;
         }
-        
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .buttons { display: none; }
-        .buttons.show { display: block; }
-        
+        .btn:hover { transform: scale(1.02); }
+        .btn:active { transform: scale(0.98); }
+        .btn.hidden { display: none; }
         .status {
-            font-size: 12px;
+            font-size: 13px;
             color: rgba(255,255,255,0.4);
-            margin-top: 16px;
         }
-        
+        .status.hidden { display: none; }
         .confetti {
             position: fixed;
             top: 0; left: 0;
@@ -116,122 +98,74 @@
             overflow: hidden;
             z-index: 100;
         }
-        
         .confetti-piece {
             position: absolute;
             width: 8px; height: 8px;
             animation: confettiFall 3s ease-out forwards;
         }
-        
         @keyframes confettiFall {
             0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <img src="https://dunia.one/images/logo.png" alt="dunia" class="logo" id="logo">
-            <div class="success-icon" id="success-icon">✓</div>
-            <div class="spinner" id="spinner"></div>
-            
-            <h1 id="title">yönlendiriliyor...</h1>
-            <p class="message" id="message">dunia uygulamasına yönlendiriliyorsun.</p>
-            
-            <div class="buttons" id="buttons">
-                <a href="#" class="btn btn-primary" id="open-app-btn">dunia'yı aç</a>
-                <a href="#" class="btn btn-secondary" id="appstore-btn">app store'dan indir</a>
-            </div>
-            
-            <p class="status" id="status"></p>
+    <div class="card">
+        <div class="logo">
+            <img src="https://dunia.one/images/logo.png" alt="dunia">
         </div>
+        <div class="spinner" id="spinner"></div>
+        <div class="checkmark" id="checkmark">✓</div>
+        <h1 class="title" id="title">email doğrulandı! ✓</h1>
+        <p class="message" id="message">hesabın onaylandı. şimdi uygulamayı açarak doğrulanmış profilini görebilirsin.</p>
+        <a href="#" class="btn hidden" id="btn">devam et</a>
+        <p class="status" id="status">dunia açılıyor...</p>
     </div>
     
     <div class="confetti" id="confetti"></div>
 
     <script>
         (function() {
-            const APP_STORE_URL = 'https://apps.apple.com/app/dunia/id000000000';
+            const APP_STORE_URL = 'https://apps.apple.com/app/dunia/id6450894038';
             
-            // Get all parameters
+            // Parse URL params
             const params = new URLSearchParams(window.location.search);
             const hash = window.location.hash;
             const hashParams = new URLSearchParams(hash.replace('#', ''));
             
-            // Extract params (support both old Supabase format and new custom format)
             const token = params.get('token') || hashParams.get('token') || hashParams.get('access_token') || params.get('access_token');
             const userId = params.get('user_id') || hashParams.get('user_id');
-            const type = params.get('type') || hashParams.get('type') || 'unknown';
-            const refreshToken = params.get('refresh_token') || hashParams.get('refresh_token');
+            const type = params.get('type') || hashParams.get('type') || 'verify';
             
             // DOM elements
-            const logo = document.getElementById('logo');
-            const successIcon = document.getElementById('success-icon');
             const spinner = document.getElementById('spinner');
+            const checkmark = document.getElementById('checkmark');
             const title = document.getElementById('title');
             const message = document.getElementById('message');
+            const btn = document.getElementById('btn');
             const status = document.getElementById('status');
-            const buttons = document.getElementById('buttons');
-            const openAppBtn = document.getElementById('open-app-btn');
-            const appstoreBtn = document.getElementById('appstore-btn');
             const confettiContainer = document.getElementById('confetti');
             
-            const messages = {
-                'verify': { 
-                    title: 'email doğrulandı! ✓', 
-                    msg: 'hesabın onaylandı. şimdi uygulamayı açarak doğrulanmış profilini görebilirsin.',
-                    showConfetti: true
-                },
-                'signup': { 
-                    title: 'email doğrulandı! ✓', 
-                    msg: 'hesabın onaylandı. şimdi uygulamayı açarak doğrulanmış profilini görebilirsin.',
-                    showConfetti: true
-                },
-                'email_confirmation': { 
-                    title: 'email doğrulandı! ✓', 
-                    msg: 'hesabın onaylandı.',
-                    showConfetti: true
-                },
-                'recovery': { 
-                    title: 'şifre sıfırlama', 
-                    msg: 'yeni şifreni belirlemek için uygulamayı aç.'
-                },
-                'magiclink': { 
-                    title: 'giriş yapılıyor', 
-                    msg: 'otomatik giriş için uygulamayı aç.'
-                },
-                'unknown': { 
-                    title: 'yönlendiriliyor...', 
-                    msg: 'dunia uygulamasına yönlendiriliyorsun.'
-                }
-            };
-            
+            // Build deep link
             function buildDeepLink() {
-                let deepLink = 'dunia://auth/callback';
                 const dlParams = new URLSearchParams();
-                
                 if (type) dlParams.set('type', type);
                 if (token) dlParams.set('token', token);
                 if (userId) dlParams.set('user_id', userId);
-                if (refreshToken) dlParams.set('refresh_token', refreshToken);
-                
-                // For legacy Supabase access_token support
-                if (!token && hashParams.get('access_token')) {
-                    dlParams.set('access_token', hashParams.get('access_token'));
-                }
-                
-                const paramString = dlParams.toString();
-                return paramString ? deepLink + '?' + paramString : deepLink;
+                return 'dunia://auth/callback?' + dlParams.toString();
             }
             
-            function isIOS() {
-                return /iPhone|iPad|iPod/.test(navigator.userAgent);
-            }
+            const deepLink = buildDeepLink();
             
+            // Confetti effect
             function showConfetti() {
-                const colors = ['#22c55e', '#14b8a6', '#06b6d4', '#fbbf24', '#fff'];
-                for (let i = 0; i < 40; i++) {
+                const colors = ['#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#ffffff'];
+                for (let i = 0; i < 50; i++) {
                     const piece = document.createElement('div');
                     piece.className = 'confetti-piece';
                     piece.style.left = Math.random() * 100 + '%';
@@ -243,57 +177,60 @@
                 setTimeout(() => { confettiContainer.innerHTML = ''; }, 4000);
             }
             
-            function updateUI(msgData, showButtons = false) {
-                title.textContent = msgData.title;
-                message.textContent = msgData.msg;
-                
-                if (showButtons) {
-                    spinner.style.display = 'none';
-                    logo.style.display = 'none';
-                    successIcon.style.display = 'block';
-                    buttons.classList.add('show');
-                    if (msgData.showConfetti) showConfetti();
-                }
+            // Show success state
+            function showSuccess() {
+                spinner.style.display = 'none';
+                checkmark.style.display = 'block';
+                showConfetti();
             }
             
-            function tryOpenApp() {
-                const deepLink = buildDeepLink();
-                const msgData = messages[type] || messages['unknown'];
+            // Show button (when app can't be opened)
+            function showButton() {
+                status.classList.add('hidden');
+                btn.classList.remove('hidden');
+                btn.classList.add('fade-in');
+                btn.href = deepLink;
                 
-                status.textContent = 'uygulama açılıyor...';
-                updateUI(msgData);
-                
-                openAppBtn.href = deepLink;
-                appstoreBtn.href = APP_STORE_URL;
-                
-                let appOpened = false;
-                
-                document.addEventListener('visibilitychange', function handler() {
-                    if (document.hidden) {
-                        appOpened = true;
-                        document.removeEventListener('visibilitychange', handler);
-                    }
-                });
-                
-                window.location.href = deepLink;
-                
-                setTimeout(() => {
-                    if (!appOpened && !document.hidden) {
-                        status.textContent = '';
-                        updateUI(msgData, true);
-                        
-                        if (isIOS()) {
-                            title.textContent = 'dunia yüklü değil';
-                            message.textContent = 'uygulamayı app store\'dan indirerek devam edebilirsin.';
-                            setTimeout(() => { window.location.href = APP_STORE_URL; }, 2000);
+                // On button click, try deep link first, then App Store
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Try to open app
+                    window.location.href = deepLink;
+                    
+                    // If app doesn't open in 1.5 seconds, go to App Store
+                    setTimeout(function() {
+                        if (!document.hidden) {
+                            window.location.href = APP_STORE_URL;
                         }
-                    }
-                }, 2500);
+                    }, 1500);
+                });
             }
             
-            const msgData = messages[type] || messages['unknown'];
-            updateUI(msgData);
-            setTimeout(tryOpenApp, 300);
+            // Initialize
+            showSuccess();
+            
+            // Try to open app automatically
+            let appOpened = false;
+            
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    appOpened = true;
+                }
+            });
+            
+            // Try deep link after short delay
+            setTimeout(function() {
+                window.location.href = deepLink;
+            }, 800);
+            
+            // After 3 seconds, if app didn't open, show button
+            setTimeout(function() {
+                if (!appOpened && !document.hidden) {
+                    showButton();
+                }
+            }, 3000);
+            
         })();
     </script>
 </body>
