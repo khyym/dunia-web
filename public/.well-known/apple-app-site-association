@@ -3,7 +3,7 @@
     "apps": [],
     "details": [
       {
-        "appIDs": ["TEAMID.one.dunia.app"],
+        "appIDs": ["L3D78YD53K.one.dunia.app"],
         "paths": [
           "/auth/*",
           "/auth/callback",
@@ -17,8 +17,6 @@
     ]
   },
   "webcredentials": {
-    "apps": ["TEAMID.one.dunia.app"]
-  },
-  "appclips": {}
+    "apps": ["L3D78YD53K.one.dunia.app"]
+  }
 }
-
