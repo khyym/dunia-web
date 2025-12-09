@@ -26,18 +26,10 @@
             text-align: center;
             border: 1px solid rgba(255,255,255,0.08);
         }
-        .logo {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 28px;
-        }
-        .logo img {
-            width: 100%;
-            height: 100%;
-        }
+        .logo { width: 100px; height: 100px; margin: 0 auto 28px; }
+        .logo img { width: 100%; height: 100%; }
         .spinner {
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             border: 3px solid rgba(255,255,255,0.1);
             border-top-color: #fff;
             border-radius: 50%;
@@ -46,213 +38,123 @@
         }
         .spinner.hidden { display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-        .message {
-            font-size: 15px;
-            color: rgba(255,255,255,0.6);
-            line-height: 1.5;
-            margin-bottom: 28px;
-        }
+        .title { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+        .message { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.5; margin-bottom: 28px; }
         .btn {
-            display: block;
-            width: 100%;
-            padding: 16px 32px;
-            background: #fff;
-            color: #000;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            border-radius: 50px;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.2s;
+            display: block; width: 100%; padding: 16px 32px;
+            background: #fff; color: #000;
+            font-size: 16px; font-weight: 600;
+            text-decoration: none; border-radius: 50px;
+            border: none; cursor: pointer;
         }
-        .btn:hover { transform: scale(1.02); }
-        .btn:active { transform: scale(0.98); }
         .btn.hidden { display: none; }
-        .btn.secondary {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            margin-top: 12px;
-        }
-        .status {
-            font-size: 12px;
-            color: rgba(255,255,255,0.3);
-            margin-top: 16px;
-        }
-        .confetti {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 100;
-        }
-        .confetti-piece {
-            position: absolute;
-            width: 8px; height: 8px;
-            animation: confettiFall 3s ease-out forwards;
-        }
-        @keyframes confettiFall {
-            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
+        .btn.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; margin-top: 12px; }
+        .debug { font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 20px; word-break: break-all; }
+        .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+        .confetti-piece { position: absolute; width: 8px; height: 8px; animation: confettiFall 3s ease-out forwards; }
+        @keyframes confettiFall { 0% { transform: translateY(-100vh) rotate(0); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="logo">
-            <img src="https://dunia.one/images/logo.png" alt="dunia">
-        </div>
+        <div class="logo"><img src="https://dunia.one/images/logo.png" alt="dunia"></div>
         <div class="spinner" id="spinner"></div>
         <h1 class="title" id="title">doğrulanıyor...</h1>
         <p class="message" id="message">email adresin doğrulanıyor.</p>
         <button class="btn hidden" id="btn">devam et</button>
         <button class="btn secondary hidden" id="btn-appstore">app store'dan indir</button>
-        <p class="status" id="status"></p>
+        <p class="debug" id="debug"></p>
     </div>
-    
     <div class="confetti" id="confetti"></div>
 
     <script>
-        (function() {
-            const SUPABASE_URL = 'https://mjxqfmlsjokcuwugytve.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qeHFmbWxzam9rY3V3dWd5dHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5NTk5MDAsImV4cCI6MjA0MDUzNTkwMH0.tBeYr2BaPMgGJBJ0rxJMBQaprXNRfyX9dEJNOqmFfHU';
-            const APP_STORE_URL = 'https://apps.apple.com/app/dunia/id6450894038';
+        const SUPABASE_URL = 'https://mjxqfmlsjokcuwugytve.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qeHFmbWxzam9rY3V3dWd5dHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5NTk5MDAsImV4cCI6MjA0MDUzNTkwMH0.tBeYr2BaPMgGJBJ0rxJMBQaprXNRfyX9dEJNOqmFfHU';
+        const APP_STORE_URL = 'https://apps.apple.com/app/dunia/id6450894038';
+        
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        const userId = params.get('user_id');
+        
+        const $ = id => document.getElementById(id);
+        
+        function showConfetti() {
+            const colors = ['#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#fff'];
+            for (let i = 0; i < 50; i++) {
+                const p = document.createElement('div');
+                p.className = 'confetti-piece';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDelay = Math.random() * 0.5 + 's';
+                p.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                $('confetti').appendChild(p);
+            }
+            setTimeout(() => $('confetti').innerHTML = '', 4000);
+        }
+        
+        function show(titleText, messageText, success, confetti) {
+            $('spinner').classList.add('hidden');
+            $('title').textContent = titleText;
+            $('message').textContent = messageText;
+            $('btn').classList.remove('hidden');
+            $('btn-appstore').classList.remove('hidden');
+            if (confetti) showConfetti();
             
-            const params = new URLSearchParams(window.location.search);
-            const hash = window.location.hash;
-            const hashParams = new URLSearchParams(hash.replace('#', ''));
-            
-            const token = params.get('token') || hashParams.get('token');
-            const userId = params.get('user_id') || hashParams.get('user_id');
-            
-            const spinner = document.getElementById('spinner');
-            const title = document.getElementById('title');
-            const message = document.getElementById('message');
-            const btn = document.getElementById('btn');
-            const btnAppstore = document.getElementById('btn-appstore');
-            const status = document.getElementById('status');
-            const confettiContainer = document.getElementById('confetti');
-            
-            function buildDeepLink() {
-                const dlParams = new URLSearchParams();
-                dlParams.set('type', 'verified');
-                if (userId) dlParams.set('user_id', userId);
-                return 'dunia://auth/callback?' + dlParams.toString();
+            const deepLink = 'dunia://auth/callback?type=verified&user_id=' + (userId || '');
+            $('btn').onclick = () => { window.location.href = deepLink; };
+            $('btn-appstore').onclick = () => { window.location.href = APP_STORE_URL; };
+        }
+        
+        async function verify() {
+            if (!token || !userId) {
+                show('geçersiz link', 'doğrulama bilgileri eksik.', false, false);
+                $('debug').textContent = 'token: ' + token + ', userId: ' + userId;
+                return;
             }
             
-            const deepLink = buildDeepLink();
-            
-            function showConfetti() {
-                const colors = ['#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#ffffff'];
-                for (let i = 0; i < 50; i++) {
-                    const piece = document.createElement('div');
-                    piece.className = 'confetti-piece';
-                    piece.style.left = Math.random() * 100 + '%';
-                    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    piece.style.animationDelay = Math.random() * 0.5 + 's';
-                    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                    confettiContainer.appendChild(piece);
-                }
-                setTimeout(() => { confettiContainer.innerHTML = ''; }, 4000);
-            }
-            
-            function showUI(titleText, messageText, isSuccess, showConfettiAnim) {
-                spinner.classList.add('hidden');
-                title.textContent = titleText;
-                message.textContent = messageText;
-                btn.classList.remove('hidden');
-                btnAppstore.classList.remove('hidden');
+            try {
+                const res = await fetch(SUPABASE_URL + '/rest/v1/rpc/rpc_verify_email_with_token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({ p_token: token, p_user_id: userId })
+                });
                 
-                if (showConfettiAnim) {
-                    showConfetti();
-                }
+                const text = await res.text();
+                $('debug').textContent = 'Status: ' + res.status + ' | Response: ' + text.substring(0, 200);
                 
-                btn.onclick = function() {
-                    status.textContent = 'dunia açılıyor...';
-                    window.location.href = deepLink;
-                    setTimeout(function() {
-                        if (!document.hidden) {
-                            status.textContent = 'uygulama bulunamadı.';
-                        }
-                    }, 2000);
-                };
-                
-                btnAppstore.onclick = function() {
-                    window.location.href = APP_STORE_URL;
-                };
-            }
-            
-            async function verifyEmail() {
-                if (!token || !userId) {
-                    showUI('eksik bilgi', 'doğrulama linki geçersiz.', false, false);
+                if (!res.ok) {
+                    show('sunucu hatası', 'doğrulama yapılamadı. kod: ' + res.status, false, false);
                     return;
                 }
                 
-                try {
-                    const response = await fetch(SUPABASE_URL + '/rest/v1/rpc/rpc_verify_email_with_token', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
-                        },
-                        body: JSON.stringify({
-                            p_token: token,
-                            p_user_id: userId
-                        })
-                    });
-                    
-                    const text = await response.text();
-                    console.log('Response:', text);
-                    
-                    let result;
-                    try {
-                        result = JSON.parse(text);
-                    } catch (e) {
-                        console.error('JSON parse error:', e);
-                        showUI('email doğrulandı!', 'hesabın onaylandı.', true, true);
-                        return;
-                    }
-                    
-                    // Handle different response formats
-                    if (result === null || result === undefined) {
-                        showUI('email doğrulandı!', 'hesabın onaylandı.', true, true);
-                        return;
-                    }
-                    
-                    if (typeof result === 'object') {
-                        if (result.success === true) {
-                            if (result.already_verified) {
-                                showUI('zaten doğrulanmış', 'email adresin daha önce doğrulanmış.', true, false);
-                            } else {
-                                showUI('email doğrulandı!', 'hesabın onaylandı. artık onaylı rozetine sahipsin!', true, true);
-                            }
-                        } else if (result.success === false) {
-                            showUI('doğrulama başarısız', result.error || 'link geçersiz veya süresi dolmuş.', false, false);
-                        } else {
-                            // Unknown format but response was OK
-                            showUI('email doğrulandı!', 'hesabın onaylandı.', true, true);
-                        }
-                    } else {
-                        showUI('email doğrulandı!', 'hesabın onaylandı.', true, true);
-                    }
-                    
-                } catch (error) {
-                    console.error('Error:', error);
-                    showUI('bağlantı hatası', 'lütfen tekrar dene.', false, false);
+                let data;
+                try { data = JSON.parse(text); } catch (e) {
+                    show('yanıt hatası', 'sunucu yanıtı okunamadı.', false, false);
+                    return;
                 }
+                
+                // STRICT CHECK - only show success if data.success === true
+                if (data && data.success === true) {
+                    if (data.already_verified === true) {
+                        show('zaten doğrulanmış', 'email adresin daha önce doğrulanmış.', true, false);
+                    } else {
+                        show('email doğrulandı!', 'hesabın onaylandı. artık onaylı rozetine sahipsin!', true, true);
+                    }
+                } else {
+                    show('doğrulama başarısız', data?.error || 'link geçersiz veya süresi dolmuş.', false, false);
+                }
+                
+            } catch (err) {
+                $('debug').textContent = 'Error: ' + err.message;
+                show('bağlantı hatası', 'sunucuya ulaşılamadı.', false, false);
             }
-            
-            verifyEmail();
-            
-        })();
+        }
+        
+        verify();
     </script>
 </body>
 </html>
