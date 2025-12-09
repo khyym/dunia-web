@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUNIA - Yönlendiriliyor...</title>
+    <meta name="robots" content="noindex">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 400px;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .message {
+            color: #9ca3af;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .manual-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-top: 1rem;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 2s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        .status {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 1rem;
+        }
+        
+        .success {
+            color: #22c55e;
+        }
+        
+        .error {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🌍</div>
+        <div class="spinner" id="spinner"></div>
+        <h1 id="title">Yönlendiriliyor...</h1>
+        <p class="message" id="message">DUNIA uygulamasına yönlendiriliyorsunuz. Lütfen bekleyin.</p>
+        <p class="status" id="status"></p>
+        <a href="dunia://" class="manual-link" id="manual-link" style="display: none;">DUNIA'yı Aç</a>
+    </div>
+
+    <script>
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const hash = window.location.hash;
+            
+            // Supabase auth parametrelerini al
+            const token = params.get('token');
+            const type = params.get('type'); // signup, recovery, invite, magiclink
+            const accessToken = params.get('access_token');
+            const refreshToken = params.get('refresh_token');
+            
+            // Hash'ten de parametreleri kontrol et (Supabase bazen hash kullanır)
+            const hashParams = new URLSearchParams(hash.replace('#', ''));
+            const hashAccessToken = hashParams.get('access_token');
+            const hashType = hashParams.get('type');
+            
+            const finalType = type || hashType || 'unknown';
+            const finalToken = token || accessToken || hashAccessToken;
+            
+            // Deep link oluştur
+            let deepLink = 'dunia://auth/callback';
+            const deepLinkParams = new URLSearchParams();
+            
+            if (finalToken) deepLinkParams.set('token', finalToken);
+            if (finalType) deepLinkParams.set('type', finalType);
+            if (refreshToken) deepLinkParams.set('refresh_token', refreshToken);
+            
+            // Hash parametrelerini de ekle
+            if (hashAccessToken) deepLinkParams.set('access_token', hashAccessToken);
+            
+            const paramString = deepLinkParams.toString();
+            if (paramString) {
+                deepLink += '?' + paramString;
+            }
+            
+            // Hash'i de ekle (bazı Supabase versiyonları için)
+            if (hash) {
+                deepLink += hash;
+            }
+            
+            const title = document.getElementById('title');
+            const message = document.getElementById('message');
+            const status = document.getElementById('status');
+            const spinner = document.getElementById('spinner');
+            const manualLink = document.getElementById('manual-link');
+            
+            // Tip'e göre mesaj
+            const messages = {
+                'signup': { title: 'Email Doğrulandı!', msg: 'Hesabınız doğrulandı. Uygulamaya yönlendiriliyorsunuz.' },
+                'recovery': { title: 'Şifre Sıfırlama', msg: 'Şifrenizi sıfırlamak için uygulamaya yönlendiriliyorsunuz.' },
+                'magiclink': { title: 'Giriş Yapılıyor', msg: 'Otomatik giriş için uygulamaya yönlendiriliyorsunuz.' },
+                'invite': { title: 'Davet Kabul Edildi', msg: 'Davetiniz kabul edildi. Uygulamaya yönlendiriliyorsunuz.' },
+                'email_change': { title: 'Email Değiştirildi', msg: 'Email adresiniz güncellendi. Uygulamaya yönlendiriliyorsunuz.' },
+                'unknown': { title: 'Yönlendiriliyor...', msg: 'DUNIA uygulamasına yönlendiriliyorsunuz.' }
+            };
+            
+            const currentMsg = messages[finalType] || messages['unknown'];
+            title.textContent = currentMsg.title;
+            message.textContent = currentMsg.msg;
+            
+            // Manuel link'i ayarla
+            manualLink.href = deepLink;
+            
+            // Deep link'e yönlendir
+            function tryDeepLink() {
+                status.textContent = 'Uygulama açılıyor...';
+                
+                // Önce iframe ile dene (sessiz başarısızlık için)
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = deepLink;
+                document.body.appendChild(iframe);
+                
+                // Aynı zamanda location ile de dene
+                setTimeout(() => {
+                    window.location.href = deepLink;
+                }, 100);
+                
+                // 2.5 saniye sonra hala buradaysak, manuel link göster
+                setTimeout(() => {
+                    spinner.style.display = 'none';
+                    title.textContent = 'Uygulama Açılamadı';
+                    message.textContent = 'DUNIA uygulaması yüklü değil veya açılamadı. Aşağıdaki butona tıklayarak tekrar deneyin veya App Store\'dan indirin.';
+                    status.textContent = '';
+                    manualLink.style.display = 'inline-block';
+                    manualLink.style.opacity = '1';
+                }, 2500);
+            }
+            
+            // Sayfa yüklenince başlat
+            setTimeout(tryDeepLink, 500);
+        })();
+    </script>
+</body>
+</html>
+

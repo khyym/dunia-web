@@ -1,0 +1,24 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["TEAMID.one.dunia.app"],
+        "paths": [
+          "/auth/*",
+          "/auth/callback",
+          "/auth/callback/*",
+          "/reset-password/*",
+          "/verify/*",
+          "/invite/*",
+          "/u/*"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["TEAMID.one.dunia.app"]
+  },
+  "appclips": {}
+}
+
