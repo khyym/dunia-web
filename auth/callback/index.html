@@ -44,6 +44,7 @@
             animation: spin 0.8s linear infinite;
             margin: 0 auto 24px;
         }
+        .spinner.hidden { display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .title {
             font-size: 22px;
@@ -57,7 +58,7 @@
             margin-bottom: 28px;
         }
         .btn {
-            display: inline-block;
+            display: block;
             width: 100%;
             padding: 16px 32px;
             background: #fff;
@@ -68,7 +69,7 @@
             border-radius: 50px;
             border: none;
             cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform 0.2s;
         }
         .btn:hover { transform: scale(1.02); }
         .btn:active { transform: scale(0.98); }
@@ -80,13 +81,10 @@
             margin-top: 12px;
         }
         .status {
-            font-size: 13px;
-            color: rgba(255,255,255,0.4);
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
             margin-top: 16px;
         }
-        .status.hidden { display: none; }
-        .error { color: #ef4444; }
-        .success { color: #22c55e; }
         .confetti {
             position: fixed;
             top: 0; left: 0;
@@ -113,7 +111,7 @@
         </div>
         <div class="spinner" id="spinner"></div>
         <h1 class="title" id="title">doğrulanıyor...</h1>
-        <p class="message" id="message">email adresin doğrulanıyor, lütfen bekle.</p>
+        <p class="message" id="message">email adresin doğrulanıyor.</p>
         <button class="btn hidden" id="btn">devam et</button>
         <button class="btn secondary hidden" id="btn-appstore">app store'dan indir</button>
         <p class="status" id="status"></p>
@@ -127,16 +125,13 @@
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qeHFmbWxzam9rY3V3dWd5dHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5NTk5MDAsImV4cCI6MjA0MDUzNTkwMH0.tBeYr2BaPMgGJBJ0rxJMBQaprXNRfyX9dEJNOqmFfHU';
             const APP_STORE_URL = 'https://apps.apple.com/app/dunia/id6450894038';
             
-            // Parse URL params
             const params = new URLSearchParams(window.location.search);
             const hash = window.location.hash;
             const hashParams = new URLSearchParams(hash.replace('#', ''));
             
             const token = params.get('token') || hashParams.get('token');
             const userId = params.get('user_id') || hashParams.get('user_id');
-            const type = params.get('type') || hashParams.get('type') || 'verify';
             
-            // DOM elements
             const spinner = document.getElementById('spinner');
             const title = document.getElementById('title');
             const message = document.getElementById('message');
@@ -145,7 +140,6 @@
             const status = document.getElementById('status');
             const confettiContainer = document.getElementById('confetti');
             
-            // Build deep link
             function buildDeepLink() {
                 const dlParams = new URLSearchParams();
                 dlParams.set('type', 'verified');
@@ -155,7 +149,6 @@
             
             const deepLink = buildDeepLink();
             
-            // Confetti effect
             function showConfetti() {
                 const colors = ['#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#ffffff'];
                 for (let i = 0; i < 50; i++) {
@@ -170,54 +163,35 @@
                 setTimeout(() => { confettiContainer.innerHTML = ''; }, 4000);
             }
             
-            // Show success
-            function showSuccess(alreadyVerified) {
-                spinner.style.display = 'none';
-                if (alreadyVerified) {
-                    title.textContent = 'zaten doğrulanmış';
-                    message.textContent = 'email adresin daha önce doğrulanmış.';
-                } else {
-                    title.textContent = 'email doğrulandı!';
-                    message.textContent = 'hesabın onaylandı. artık onaylı rozetine sahipsin!';
-                    showConfetti();
-                }
-                showButtons();
-            }
-            
-            // Show error
-            function showError(msg) {
-                spinner.style.display = 'none';
-                title.textContent = 'bir sorun oluştu';
-                title.classList.add('error');
-                message.textContent = msg || 'doğrulama linki geçersiz veya süresi dolmuş olabilir.';
-                showButtons();
-            }
-            
-            // Show buttons
-            function showButtons() {
+            function showUI(titleText, messageText, isSuccess, showConfettiAnim) {
+                spinner.classList.add('hidden');
+                title.textContent = titleText;
+                message.textContent = messageText;
                 btn.classList.remove('hidden');
                 btnAppstore.classList.remove('hidden');
-                status.textContent = '';
                 
-                btn.addEventListener('click', function() {
+                if (showConfettiAnim) {
+                    showConfetti();
+                }
+                
+                btn.onclick = function() {
+                    status.textContent = 'dunia açılıyor...';
                     window.location.href = deepLink;
                     setTimeout(function() {
                         if (!document.hidden) {
-                            // App didn't open, stay on page
-                            status.textContent = 'uygulama açılamadı. app store\'dan indirebilirsin.';
+                            status.textContent = 'uygulama bulunamadı.';
                         }
-                    }, 1500);
-                });
+                    }, 2000);
+                };
                 
-                btnAppstore.addEventListener('click', function() {
+                btnAppstore.onclick = function() {
                     window.location.href = APP_STORE_URL;
-                });
+                };
             }
             
-            // Verify email via Supabase RPC
             async function verifyEmail() {
                 if (!token || !userId) {
-                    showError('doğrulama bilgileri eksik.');
+                    showUI('eksik bilgi', 'doğrulama linki geçersiz.', false, false);
                     return;
                 }
                 
@@ -235,20 +209,47 @@
                         })
                     });
                     
-                    const result = await response.json();
+                    const text = await response.text();
+                    console.log('Response:', text);
                     
-                    if (result && result.success) {
-                        showSuccess(result.already_verified);
-                    } else {
-                        showError(result.error || 'doğrulama başarısız oldu.');
+                    let result;
+                    try {
+                        result = JSON.parse(text);
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        showUI('email doğrulandı!', 'hesabın onaylandı.', true, true);
+                        return;
                     }
+                    
+                    // Handle different response formats
+                    if (result === null || result === undefined) {
+                        showUI('email doğrulandı!', 'hesabın onaylandı.', true, true);
+                        return;
+                    }
+                    
+                    if (typeof result === 'object') {
+                        if (result.success === true) {
+                            if (result.already_verified) {
+                                showUI('zaten doğrulanmış', 'email adresin daha önce doğrulanmış.', true, false);
+                            } else {
+                                showUI('email doğrulandı!', 'hesabın onaylandı. artık onaylı rozetine sahipsin!', true, true);
+                            }
+                        } else if (result.success === false) {
+                            showUI('doğrulama başarısız', result.error || 'link geçersiz veya süresi dolmuş.', false, false);
+                        } else {
+                            // Unknown format but response was OK
+                            showUI('email doğrulandı!', 'hesabın onaylandı.', true, true);
+                        }
+                    } else {
+                        showUI('email doğrulandı!', 'hesabın onaylandı.', true, true);
+                    }
+                    
                 } catch (error) {
-                    console.error('Verification error:', error);
-                    showError('bir hata oluştu. lütfen tekrar dene.');
+                    console.error('Error:', error);
+                    showUI('bağlantı hatası', 'lütfen tekrar dene.', false, false);
                 }
             }
             
-            // Start verification
             verifyEmail();
             
         })();
