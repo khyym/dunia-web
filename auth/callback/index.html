@@ -49,7 +49,6 @@
         }
         .btn.hidden { display: none; }
         .btn.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; margin-top: 12px; }
-        .debug { font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 20px; word-break: break-all; }
         .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
         .confetti-piece { position: absolute; width: 8px; height: 8px; animation: confettiFall 3s ease-out forwards; }
         @keyframes confettiFall { 0% { transform: translateY(-100vh) rotate(0); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
@@ -63,7 +62,6 @@
         <p class="message" id="message">email adresin doğrulanıyor.</p>
         <button class="btn hidden" id="btn">devam et</button>
         <button class="btn secondary hidden" id="btn-appstore">app store'dan indir</button>
-        <p class="debug" id="debug"></p>
     </div>
     <div class="confetti" id="confetti"></div>
 
@@ -92,7 +90,7 @@
             setTimeout(() => $('confetti').innerHTML = '', 4000);
         }
         
-        function show(titleText, messageText, success, confetti) {
+        function show(titleText, messageText, confetti) {
             $('spinner').classList.add('hidden');
             $('title').textContent = titleText;
             $('message').textContent = messageText;
@@ -107,50 +105,36 @@
         
         async function verify() {
             if (!token || !userId) {
-                show('geçersiz link', 'doğrulama bilgileri eksik.', false, false);
-                $('debug').textContent = 'token: ' + token + ', userId: ' + userId;
+                show('geçersiz link', 'doğrulama bilgileri eksik.', false);
                 return;
             }
             
             try {
-                const res = await fetch(SUPABASE_URL + '/rest/v1/rpc/rpc_verify_email_with_token', {
+                // Use Edge Function instead of RPC
+                const res = await fetch(SUPABASE_URL + '/functions/v1/verify-email', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'apikey': SUPABASE_ANON_KEY,
                         'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
                     },
-                    body: JSON.stringify({ p_token: token, p_user_id: userId })
+                    body: JSON.stringify({ token: token, user_id: userId })
                 });
                 
-                const text = await res.text();
-                $('debug').textContent = 'Status: ' + res.status + ' | Response: ' + text.substring(0, 200);
+                const data = await res.json();
                 
-                if (!res.ok) {
-                    show('sunucu hatası', 'doğrulama yapılamadı. kod: ' + res.status, false, false);
-                    return;
-                }
-                
-                let data;
-                try { data = JSON.parse(text); } catch (e) {
-                    show('yanıt hatası', 'sunucu yanıtı okunamadı.', false, false);
-                    return;
-                }
-                
-                // STRICT CHECK - only show success if data.success === true
-                if (data && data.success === true) {
+                if (data.success === true) {
                     if (data.already_verified === true) {
-                        show('zaten doğrulanmış', 'email adresin daha önce doğrulanmış.', true, false);
+                        show('zaten doğrulanmış', 'email adresin daha önce doğrulanmış.', false);
                     } else {
-                        show('email doğrulandı!', 'hesabın onaylandı. artık onaylı rozetine sahipsin!', true, true);
+                        show('email doğrulandı!', 'hesabın onaylandı. artık onaylı rozetine sahipsin!', true);
                     }
                 } else {
-                    show('doğrulama başarısız', data?.error || 'link geçersiz veya süresi dolmuş.', false, false);
+                    show('doğrulama başarısız', data.error || 'link geçersiz veya süresi dolmuş.', false);
                 }
                 
             } catch (err) {
-                $('debug').textContent = 'Error: ' + err.message;
-                show('bağlantı hatası', 'sunucuya ulaşılamadı.', false, false);
+                console.error('Error:', err);
+                show('bağlantı hatası', 'sunucuya ulaşılamadı.', false);
             }
         }
         
