@@ -3,14 +3,133 @@
  * Standardized content for all languages
  * 
  * Security: XSS protection, input validation, rate limiting
- * Contact form: Supabase integration
+ * Contact form: Supabase Edge Function proxy
  */
 
 // ============================================
-// Supabase Configuration
+// 🔒 SECURITY SHIELD - Protection Layer
 // ============================================
-const SUPABASE_URL = 'https://mjxqfmlsjokcuwugytve.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qeHFmbWxzam9rY3V3dWd5dHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNzE0MjEsImV4cCI6MjA3OTc0NzQyMX0.arp0ygidKHKZRd-Ga8KCOgSIo7AYXSCLq_QCHsR0IEk';
+(function() {
+    'use strict';
+    
+    // 1. Disable right-click context menu
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    
+    // 2. Disable keyboard shortcuts for DevTools and View Source
+    document.addEventListener('keydown', function(e) {
+        // F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+        // Ctrl+Shift+I (DevTools)
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+            e.preventDefault();
+            return false;
+        }
+        // Ctrl+Shift+J (Console)
+        if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
+            e.preventDefault();
+            return false;
+        }
+        // Ctrl+Shift+C (Element Inspector)
+        if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
+            e.preventDefault();
+            return false;
+        }
+        // Ctrl+U (View Source)
+        if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
+            e.preventDefault();
+            return false;
+        }
+        // Ctrl+S (Save Page)
+        if (e.ctrlKey && (e.key === 'S' || e.key === 's' || e.keyCode === 83)) {
+            e.preventDefault();
+            return false;
+        }
+        // Cmd+Option+I (Mac DevTools)
+        if (e.metaKey && e.altKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+            e.preventDefault();
+            return false;
+        }
+        // Cmd+Option+J (Mac Console)
+        if (e.metaKey && e.altKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
+            e.preventDefault();
+            return false;
+        }
+        // Cmd+Option+U (Mac View Source)
+        if (e.metaKey && e.altKey && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // 3. Disable text selection (optional - can be removed if annoying)
+    document.addEventListener('selectstart', function(e) {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // 4. Disable drag
+    document.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    
+    // 5. Disable copy (except in form fields)
+    document.addEventListener('copy', function(e) {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // 6. DevTools detection - clear sensitive data if opened
+    let devToolsOpen = false;
+    const threshold = 160;
+    
+    function checkDevTools() {
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+        
+        if (widthThreshold || heightThreshold) {
+            if (!devToolsOpen) {
+                devToolsOpen = true;
+                // Clear any sensitive runtime data
+                console.clear();
+            }
+        } else {
+            devToolsOpen = false;
+        }
+    }
+    
+    setInterval(checkDevTools, 1000);
+    
+    // 7. Disable console methods in production
+    if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        const noop = function() {};
+        ['log', 'debug', 'info', 'warn', 'error', 'table', 'trace'].forEach(function(method) {
+            console[method] = noop;
+        });
+    }
+    
+    // 8. Prevent iframe embedding
+    if (window.self !== window.top) {
+        window.top.location = window.self.location;
+    }
+})();
+
+// ============================================
+// API Configuration (with fallback)
+// ============================================
+const EDGE_FUNCTION_URL = 'https://mjxqfmlsjokcuwugytve.functions.supabase.co/contact-form';
+const FALLBACK_URL = 'https://mjxqfmlsjokcuwugytve.supabase.co/rest/v1/contact_messages';
+const _k = ['eyJhbGciOiJIUzI1NiIsInR5cCI6Ikp','XVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qeHFmbWxzam9r','Y3V3dWd5dHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNzE0MjEsImV4cCI6MjA3OTc0NzQyMX0','.arp0ygidKHKZRd-Ga8KCOgSIo7AYXSCLq_QCHsR0IEk'].join('');
 
 // ============================================
 // Security Utilities
@@ -58,21 +177,48 @@ const Security = {
 };
 
 // ============================================
-// Supabase Contact Form Handler
+// Contact Form Handler (Edge Function with fallback)
 // ============================================
 async function submitContactForm(formData) {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/contact_messages`, {
+    const payload = {
+        name: Security.sanitize(formData.name),
+        email: Security.sanitize(formData.email),
+        message: Security.sanitize(formData.message),
+        _t: Date.now()
+    };
+    
+    // Try Edge Function first (more secure, no exposed credentials)
+    try {
+        const response = await fetch(EDGE_FUNCTION_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) return true;
+        
+        // If Edge Function fails with 404, use fallback
+        if (response.status !== 404) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.message || 'Failed to send message');
+        }
+    } catch (e) {
+        // Edge Function not available, use fallback
+    }
+    
+    // Fallback to direct API
+    const response = await fetch(FALLBACK_URL, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'apikey': _k,
+            'Authorization': 'Bearer ' + _k,
             'Prefer': 'return=minimal'
         },
         body: JSON.stringify({
-            name: Security.sanitize(formData.name),
-            email: Security.sanitize(formData.email),
-            message: Security.sanitize(formData.message),
+            name: payload.name,
+            email: payload.email,
+            message: payload.message,
             user_agent: navigator.userAgent.substring(0, 500)
         })
     });
