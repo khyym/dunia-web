@@ -1,0 +1,883 @@
+/* ============================================
+   DUNIA - Space Theme with Starfield
+   ============================================ */
+
+:root {
+    --text-color: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.65);
+    --signal-color: rgba(255, 255, 255, 0.06);
+    --transition-duration: 2.5s;
+    --easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background: #000;
+    color: var(--text-color);
+    transition: color var(--transition-duration) var(--easing);
+}
+
+/* ============================================
+   Background Crossfade
+   ============================================ */
+.bg-dark,
+.bg-white {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    transition: opacity var(--transition-duration) var(--easing);
+}
+
+.bg-dark {
+    background: radial-gradient(ellipse 150% 120% at 50% 45%,
+            rgba(139, 92, 246, 0.15) 0%,
+            rgba(76, 29, 149, 0.06) 40%,
+            #000000 75%);
+    opacity: 1;
+}
+
+.bg-white {
+    background: #ffffff;
+    opacity: 0;
+}
+
+body.mode-white .bg-dark {
+    opacity: 0;
+}
+
+body.mode-white .bg-white {
+    opacity: 1;
+}
+
+body.mode-dark .bg-dark {
+    opacity: 1;
+}
+
+body.mode-dark .bg-white {
+    opacity: 0;
+}
+
+/* Theme variations */
+body.theme-purple .bg-dark {
+    background: radial-gradient(ellipse 150% 120% at 50% 45%,
+            rgba(139, 92, 246, 0.18) 0%, rgba(76, 29, 149, 0.08) 40%, #000000 75%);
+}
+
+body.theme-cyan .bg-dark {
+    background: radial-gradient(ellipse 150% 120% at 50% 45%,
+            rgba(34, 211, 238, 0.15) 0%, rgba(14, 116, 144, 0.06) 40%, #000000 75%);
+}
+
+body.theme-warm .bg-dark {
+    background: radial-gradient(ellipse 150% 120% at 50% 45%,
+            rgba(251, 146, 60, 0.15) 0%, rgba(154, 52, 18, 0.06) 40%, #000000 75%);
+}
+
+body.theme-rose .bg-dark {
+    background: radial-gradient(ellipse 150% 120% at 50% 45%,
+            rgba(244, 114, 182, 0.15) 0%, rgba(157, 23, 77, 0.06) 40%, #000000 75%);
+}
+
+body.theme-emerald .bg-dark {
+    background: radial-gradient(ellipse 150% 120% at 50% 45%,
+            rgba(52, 211, 153, 0.15) 0%, rgba(6, 78, 59, 0.06) 40%, #000000 75%);
+}
+
+body.theme-blue .bg-dark {
+    background: radial-gradient(ellipse 150% 120% at 50% 45%,
+            rgba(59, 130, 246, 0.15) 0%, rgba(30, 64, 175, 0.06) 40%, #000000 75%);
+}
+
+body.theme-violet .bg-dark {
+    background: radial-gradient(ellipse 150% 120% at 50% 45%,
+            rgba(167, 139, 250, 0.15) 0%, rgba(91, 33, 182, 0.06) 40%, #000000 75%);
+}
+
+body.theme-sakura .bg-dark {
+    background: radial-gradient(ellipse 150% 120% at 50% 45%,
+            rgba(251, 207, 232, 0.18) 0%, rgba(190, 24, 93, 0.05) 40%, #000000 75%);
+}
+
+/* ============================================
+   Starfield - Realistic Space
+   ============================================ */
+.stars-container {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity var(--transition-duration) var(--easing);
+}
+
+body.mode-white .stars-container {
+    opacity: 0;
+}
+
+/* Individual star with drift */
+.star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    opacity: var(--star-opacity, 0.5);
+    animation:
+        starPulse ease-in-out infinite,
+        starDrift linear infinite;
+    will-change: opacity, transform;
+}
+
+/* Pulse effect */
+@keyframes starPulse {
+
+    0%,
+    100% {
+        opacity: var(--star-opacity, 0.5);
+    }
+
+    50% {
+        opacity: calc(var(--star-opacity, 0.5) * 0.5);
+    }
+}
+
+/* Smooth drift movement */
+@keyframes starDrift {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(4px, -6px);
+    }
+
+    50% {
+        transform: translate(-3px, -10px);
+    }
+
+    75% {
+        transform: translate(5px, -4px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+/* ============================================
+   Signal Rings
+   ============================================ */
+.signal-container {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.signal-ring {
+    position: absolute;
+    width: 3vmin;
+    height: 3vmin;
+    border-radius: 50%;
+    border: 0.5px solid var(--signal-color);
+    opacity: 0;
+    animation: signalExpand 16s cubic-bezier(0.05, 0, 0.15, 1) infinite;
+    transition: border-color var(--transition-duration) var(--easing);
+}
+
+.signal-ring:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.signal-ring:nth-child(2) {
+    animation-delay: 4s;
+}
+
+.signal-ring:nth-child(3) {
+    animation-delay: 8s;
+}
+
+.signal-ring:nth-child(4) {
+    animation-delay: 12s;
+}
+
+@keyframes signalExpand {
+    0% {
+        transform: scale(1);
+        opacity: 0;
+    }
+
+    3% {
+        opacity: 0.3;
+    }
+
+    100% {
+        transform: scale(60);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.header-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+}
+
+.brand-logo {
+    width: clamp(44px, 5vw, 55px);
+    height: auto;
+    opacity: 0.8;
+    transition: opacity 0.4s ease;
+}
+
+.brand-logo:hover {
+    opacity: 1;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+.main-container {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+}
+
+/* ============================================
+   Typography - Bigger Titles
+   ============================================ */
+.title {
+    font-size: clamp(2.2rem, 9vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--text-color);
+    transition: color var(--transition-duration) var(--easing),
+        opacity 1.2s var(--easing),
+        transform 1.2s var(--easing),
+        filter 1.2s var(--easing);
+}
+
+.title.font-turkish {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+}
+
+.title.font-english {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+}
+
+.title.font-spanish {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: clamp(2.8rem, 11vw, 7rem);
+}
+
+.title.font-french {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-style: italic;
+}
+
+.title.font-german {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+}
+
+.title.font-italian {
+    font-family: 'Dancing Script', cursive;
+    font-weight: 700;
+    font-size: clamp(3rem, 12vw, 7.5rem);
+}
+
+.title.font-portuguese {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+
+.title.font-japanese {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 700;
+}
+
+.title.font-korean {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+}
+
+.content {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    font-weight: 400;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    max-width: 520px;
+    transition: color var(--transition-duration) var(--easing),
+        opacity 1.2s var(--easing),
+        transform 1.2s var(--easing),
+        filter 1.2s var(--easing);
+}
+
+.title.hidden,
+.content.hidden {
+    opacity: 0;
+    transform: translateY(-12px);
+    filter: blur(10px);
+}
+
+.title.showing,
+.content.showing {
+    opacity: 0;
+    transform: translateY(15px);
+    filter: blur(10px);
+}
+
+.title.visible,
+.content.visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+}
+
+/* ============================================
+   Contact Button - Improved
+   ============================================ */
+.contact-btn-wrapper {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.25rem;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 1.2s var(--easing),
+        transform 1.2s var(--easing);
+}
+
+.contact-btn-wrapper.hidden {
+    opacity: 0;
+    transform: translateY(-8px);
+}
+
+.contact-btn-wrapper.showing {
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+.contact-btn-wrapper.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.contact-btn {
+    height: 42px;
+    padding: 0 1.75rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(128, 128, 128, 0.18);
+    border-radius: 100px;
+    cursor: pointer;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.4s ease;
+}
+
+.contact-btn:hover {
+    color: var(--text-color);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(128, 128, 128, 0.3);
+    transform: translateY(-2px);
+}
+
+body.mode-white .contact-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+body.mode-white .contact-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.contact-btn-text {
+    display: inline-block;
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+.footer-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 2rem;
+    padding-bottom: 2.5rem;
+}
+
+.app-store-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.9rem 1.8rem;
+    background: transparent;
+    border: 1px solid rgba(128, 128, 128, 0.12);
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: all 0.4s ease, color var(--transition-duration) var(--easing);
+}
+
+.app-store-btn:hover {
+    background: rgba(128, 128, 128, 0.05);
+    border-color: rgba(128, 128, 128, 0.25);
+    transform: translateY(-2px);
+}
+
+.apple-icon {
+    width: 24px;
+    height: 24px;
+    transform: translateY(-2px);
+}
+
+.btn-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.btn-subtitle {
+    font-size: 0.55rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    opacity: 0.45;
+    text-transform: uppercase;
+}
+
+.btn-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.est-container {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.est-label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    opacity: 0.22;
+    transition: color var(--transition-duration) var(--easing);
+}
+
+.est-year {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    opacity: 0.35;
+    font-variant-numeric: tabular-nums;
+    min-width: 7ch;
+    transition: color var(--transition-duration) var(--easing);
+}
+
+.est-year.highlight {
+    opacity: 0.7;
+}
+
+/* ============================================
+   Theme Colors
+   ============================================ */
+body.mode-dark {
+    --text-color: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.65);
+    --signal-color: rgba(255, 255, 255, 0.06);
+}
+
+body.mode-white {
+    --text-color: #0a0a0a;
+    --text-secondary: rgba(0, 0, 0, 0.55);
+    --signal-color: rgba(0, 0, 0, 0.04);
+}
+
+/* ============================================
+   Modal
+   ============================================ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-container {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    background: linear-gradient(180deg,
+            rgba(20, 20, 30, 0.95) 0%,
+            rgba(10, 10, 15, 0.98) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    border-radius: 24px;
+    padding: 2.5rem;
+    overflow: hidden;
+    transform: translateY(30px) scale(0.95);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.active .modal-container {
+    transform: translateY(0) scale(1);
+}
+
+.modal-glow {
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at center,
+            rgba(139, 92, 246, 0.15) 0%,
+            transparent 50%);
+    pointer-events: none;
+}
+
+.modal-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(139, 92, 246, 0.1);
+    pointer-events: none;
+}
+
+.modal-ring-1 {
+    width: 300px;
+    height: 300px;
+    top: -150px;
+    right: -150px;
+    animation: modalRingPulse 8s ease-in-out infinite;
+}
+
+.modal-ring-2 {
+    width: 200px;
+    height: 200px;
+    bottom: -100px;
+    left: -100px;
+    animation: modalRingPulse 8s ease-in-out infinite 2s;
+}
+
+@keyframes modalRingPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.6;
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.modal-close svg {
+    width: 16px;
+    height: 16px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.modal-content {
+    position: relative;
+    z-index: 5;
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.modal-tag {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(139, 92, 246, 0.9);
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 100px;
+    margin-bottom: 1rem;
+}
+
+.modal-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+}
+
+.modal-subtitle {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.form-group input,
+.form-group textarea {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    color: #fff;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: rgba(139, 92, 246, 0.4);
+    background: rgba(139, 92, 246, 0.05);
+}
+
+.form-group textarea {
+    resize: none;
+    min-height: 100px;
+}
+
+.form-submit {
+    margin-top: 0.75rem;
+    padding: 1rem 1.5rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+}
+
+.form-submit:hover,
+.form-submit:focus {
+    color: #000;
+    background: #fff;
+    border-color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 375px) {
+    .header-fixed {
+        padding: 2rem 1.5rem;
+    }
+
+    .footer-fixed {
+        padding: 1.5rem;
+        padding-bottom: 2rem;
+    }
+
+    .modal-container {
+        padding: 2rem 1.5rem;
+    }
+
+    .contact-btn {
+        height: 38px;
+        padding: 0 1.5rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-height: 700px) {
+    .header-fixed {
+        padding: 1.5rem;
+    }
+
+    .brand-logo {
+        width: 30px;
+    }
+
+    .title {
+        font-size: clamp(1.6rem, 7vw, 3rem);
+    }
+
+    .title.font-spanish,
+    .title.font-italian {
+        font-size: clamp(2rem, 8vw, 4rem);
+    }
+
+    .content {
+        font-size: clamp(0.9rem, 2vw, 1.05rem);
+    }
+
+    .contact-btn-wrapper {
+        height: 44px;
+        margin-top: 1rem;
+    }
+
+    .contact-btn {
+        height: 36px;
+        font-size: 0.85rem;
+    }
+
+    .footer-fixed {
+        padding-bottom: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .header-fixed {
+        padding: 3rem 2rem;
+    }
+
+    .footer-fixed {
+        padding-bottom: 3rem;
+    }
+}
+
+@media (min-width: 1440px) {
+    .title {
+        font-size: 6rem;
+    }
+
+    .title.font-spanish,
+    .title.font-italian {
+        font-size: 7.5rem;
+    }
+
+    .content {
+        font-size: 1.35rem;
+        max-width: 580px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
