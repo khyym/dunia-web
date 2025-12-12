@@ -125,11 +125,9 @@
 })();
 
 // ============================================
-// API Configuration (with fallback)
+// API Configuration (Secure Proxy - No Exposed Credentials)
 // ============================================
-const EDGE_FUNCTION_URL = 'https://mjxqfmlsjokcuwugytve.functions.supabase.co/contact-form';
-const FALLBACK_URL = 'https://mjxqfmlsjokcuwugytve.supabase.co/rest/v1/contact_messages';
-const _k = ['eyJhbGciOiJIUzI1NiIsInR5cCI6Ikp','XVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qeHFmbWxzam9r','Y3V3dWd5dHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNzE0MjEsImV4cCI6MjA3OTc0NzQyMX0','.arp0ygidKHKZRd-Ga8KCOgSIo7AYXSCLq_QCHsR0IEk'].join('');
+const API_ENDPOINT = '/api/contact';
 
 // ============================================
 // Security Utilities
@@ -177,54 +175,24 @@ const Security = {
 };
 
 // ============================================
-// Contact Form Handler (Edge Function with fallback)
+// Contact Form Handler (Secure Edge Function Only)
 // ============================================
 async function submitContactForm(formData) {
-    const payload = {
-        name: Security.sanitize(formData.name),
-        email: Security.sanitize(formData.email),
-        message: Security.sanitize(formData.message),
-        _t: Date.now()
-    };
-    
-    // Try Edge Function first (more secure, no exposed credentials)
-    try {
-        const response = await fetch(EDGE_FUNCTION_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        
-        if (response.ok) return true;
-        
-        // If Edge Function fails with 404, use fallback
-        if (response.status !== 404) {
-            const error = await response.json().catch(() => ({}));
-            throw new Error(error.message || 'Failed to send message');
-        }
-    } catch (e) {
-        // Edge Function not available, use fallback
-    }
-    
-    // Fallback to direct API
-    const response = await fetch(FALLBACK_URL, {
+    const response = await fetch(API_ENDPOINT, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'apikey': _k,
-            'Authorization': 'Bearer ' + _k,
-            'Prefer': 'return=minimal'
+        headers: { 
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            name: payload.name,
-            email: payload.email,
-            message: payload.message,
-            user_agent: navigator.userAgent.substring(0, 500)
+            name: Security.sanitize(formData.name),
+            email: Security.sanitize(formData.email),
+            message: Security.sanitize(formData.message)
         })
     });
     
     if (!response.ok) {
-        throw new Error('Failed to send message');
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || 'Failed to send message');
     }
     
     return true;

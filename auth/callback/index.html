@@ -66,8 +66,8 @@
     <div class="confetti" id="confetti"></div>
 
     <script>
-        const SUPABASE_URL = 'https://mjxqfmlsjokcuwugytve.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qeHFmbWxzam9rY3V3dWd5dHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5NTk5MDAsImV4cCI6MjA0MDUzNTkwMH0.tBeYr2BaPMgGJBJ0rxJMBQaprXNRfyX9dEJNOqmFfHU';
+        // No exposed credentials - all API calls go through secure proxy
+        const API_BASE = 'https://dunia.one/api';
         const APP_STORE_URL = 'https://apps.apple.com/app/dunia/id6450894038';
         
         const params = new URLSearchParams(window.location.search);
@@ -110,13 +110,10 @@
             }
             
             try {
-                // Use Edge Function instead of RPC
-                const res = await fetch(SUPABASE_URL + '/functions/v1/verify-email', {
+                // Use secure API proxy instead of direct Supabase call
+                const res = await fetch(API_BASE + '/verify-email', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token: token, user_id: userId })
                 });
                 
@@ -133,7 +130,6 @@
                 }
                 
             } catch (err) {
-                console.error('Error:', err);
                 show('bağlantı hatası', 'sunucuya ulaşılamadı.', false);
             }
         }
