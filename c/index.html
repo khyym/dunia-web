@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DUNIA Topluluğu</title>
+  <meta name="description" content="DUNIA topluluğuna davet edildin! Uygulamayı indir ve katıl.">
+  <meta property="og:title" content="DUNIA Topluluğu">
+  <meta property="og:description" content="Bir DUNIA topluluğuna davet edildin!">
+  <meta property="og:image" content="https://dunia.one/images/logo.png">
+  <link rel="icon" href="/favicon.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    .container {
+      text-align: center;
+      padding: 40px 24px;
+      max-width: 400px;
+    }
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 24px;
+      border-radius: 24px;
+    }
+    .icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .btn {
+      display: inline-block;
+      background: white;
+      color: black;
+      font-size: 17px;
+      font-weight: 600;
+      padding: 16px 48px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 32px rgba(255,255,255,0.2);
+    }
+    .footer {
+      margin-top: 48px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+    }
+  </style>
+  <script>
+    window.onload = function() {
+      const path = window.location.pathname;
+      const slug = path.split('/').pop();
+      if (slug) {
+        window.location.href = 'dnya://community/' + slug;
+        setTimeout(function() {
+          // App Store fallback
+        }, 2500);
+      }
+    };
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">👥</div>
+    <h1>Topluluğa Katıl!</h1>
+    <p>Bir DUNIA topluluğuna davet edildin. Uygulamayı indir ve topluluğa katıl!</p>
+    <a href="#" class="btn" onclick="alert('App Store\'da yakında!')">Uygulamayı İndir</a>
+    <p class="footer">© 2025 DUNIA</p>
+  </div>
+</body>
+</html>
+

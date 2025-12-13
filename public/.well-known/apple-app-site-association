@@ -4,14 +4,27 @@
     "details": [
       {
         "appIDs": ["L3D78YD53K.one.dunia.app"],
-        "paths": [
-          "/auth/*",
-          "/auth/callback",
-          "/auth/callback/*",
-          "/reset-password/*",
-          "/verify/*",
-          "/invite/*",
-          "/u/*"
+        "components": [
+          {
+            "/": "/auth/*",
+            "comment": "Auth callbacks (email verification, password reset)"
+          },
+          {
+            "/": "/invite/*",
+            "comment": "Referral invite links"
+          },
+          {
+            "/": "/i/*",
+            "comment": "Short invite links"
+          },
+          {
+            "/": "/c/*",
+            "comment": "Community invite links"
+          },
+          {
+            "/": "/e/*",
+            "comment": "Event invite links"
+          }
         ]
       }
     ]
