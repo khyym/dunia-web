@@ -24,6 +24,10 @@
           {
             "/": "/e/*",
             "comment": "Event invite links"
+          },
+          {
+            "/": "/qr/*",
+            "comment": "QR code friend add"
           }
         ]
       }
