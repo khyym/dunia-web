@@ -6,6 +6,10 @@
     {
       "source": "/.well-known/apple-app-site-association",
       "destination": "/public/.well-known/apple-app-site-association"
+    },
+    {
+      "source": "/r/:code",
+      "destination": "/r/index.html"
     }
   ],
   "headers": [
