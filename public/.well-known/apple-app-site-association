@@ -5,30 +5,12 @@
       {
         "appIDs": ["L3D78YD53K.one.dunia.app"],
         "components": [
-          {
-            "/": "/auth/*",
-            "comment": "Auth callbacks (email verification, password reset)"
-          },
-          {
-            "/": "/invite/*",
-            "comment": "Referral invite links"
-          },
-          {
-            "/": "/i/*",
-            "comment": "Short invite links"
-          },
-          {
-            "/": "/c/*",
-            "comment": "Community invite links"
-          },
-          {
-            "/": "/e/*",
-            "comment": "Event invite links"
-          },
-          {
-            "/": "/qr/*",
-            "comment": "QR code friend add"
-          }
+          { "/": "/auth/*" },
+          { "/": "/invite/*" },
+          { "/": "/i/*" },
+          { "/": "/c/*" },
+          { "/": "/e/*" },
+          { "/": "/r/*" }
         ]
       }
     ]
